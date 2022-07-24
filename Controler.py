@@ -3,6 +3,7 @@ import configparser as cf
 import logging
 
 
+
 class Main:
     def __init__(self):
         config = cf.ConfigParser()

@@ -8,6 +8,9 @@ from MainWindow import *
 import webbrowser
 import LogWrapper
 
+fontVal = 'Helvetica 13 bold'
+color = '#fff0f5'
+
 
 class FormWindow():
     def __init__(self, window, dbController, logger,  dane=(), pliki=()):
@@ -22,8 +25,7 @@ class FormWindow():
         '''
 
 
-        fontVal = 'Helvetica 13 bold'
-        color = '#fff0f5'
+
         self.dbController = dbController
         self.win = window
         self.win.config(bg='#ffd3d3')
@@ -34,22 +36,22 @@ class FormWindow():
         self.selectedFiles = []
         self.fileDict = {}
         self.fileIDict = {}
-        self.f = tk.LabelFrame(self.win, text="Formularz", width=600, height=150, bg=color, bd=1, cursor='arrow',
+        self.f = tk.LabelFrame(self.win, text="Formularz", width=800, height=150, bg=color, bd=1, cursor='arrow',
                                highlightbackground='silver',
                                highlightcolor='silver', highlightthickness=0, relief=tk.RIDGE)
         self.f.grid(row=0, column=0, padx=5, pady=5, ipadx=5, ipady=5, rowspan=1, columnspan=1, sticky='NSEW')
         self.f2 = tk.LabelFrame(self.f, text="Pliki", bg=color, relief=tk.RIDGE)
         self.f2.grid(row=4, column=3,padx=5, pady=5, ipadx=5, ipady=5, rowspan=1, columnspan=1, sticky='NSEW')
-        self.lbFile = tk.Listbox(self.f2, selectmode=tk.SINGLE, height=len(pliki) | 1)
+        self.lbFile = tk.Listbox(self.f2, selectmode=tk.SINGLE, height=len(pliki) | 1, width=35)
 
         self.lbl1 = tk.Label(self.f, text='Nadawca', font=fontVal,  bg=color)
         self.lbl1.grid(row=1, column=0, sticky='w')
-        self.cbb1 = (Combobox(self.f, values=list(ListaDepartamentow.keys()), width=30), "SENDERS", ListaDepartamentow)
+        self.cbb1 = (Combobox(self.f, values=list(ListaDepartamentow.keys()), width=50), "SENDERS", ListaDepartamentow)
         self.cbb1[0].grid(row=1, column=1, sticky='we')
         self.lbl2 = tk.Label(self.f, text='Data', font=fontVal,  bg=color)
         self.lbl2.grid(row=1, column=2, sticky='w', pady=5)
-        self.cal = DateEntry(self.f, width=10, font=fontVal, background='#ffd3d3',
-                             foreground='white', borderwidth=1)
+        self.cal =  DateEntry(self.f, width=10, font=fontVal, background='#ffd3d3',
+                                            foreground='white', borderwidth=1)
         self.cal.grid(row=1, column=3, sticky='ew')
         self.lbl2 = tk.Label(self.f, text='Sprawa IK', font=fontVal,  bg=color)
         self.lbl2.grid(row=2, column=0, sticky='w')
@@ -75,7 +77,7 @@ class FormWindow():
                                                                                                              sticky='news')
         tk.Button(self.f, text='Wyczyść', command=self.clear).grid(row=5, columns=1, sticky='news')
         self.cbb4 = (Combobox(self.f, values=list(ListaSygnatur.keys()), width=30), "SIGNATURES", ListaSygnatur)
-        self.cbb4[0].grid(row=4, column=1)
+        self.cbb4[0].grid(row=4, column=1, sticky='ew')
         self.lbl4 = tk.Label(self.f, text='Sygnatura', font=fontVal, bg=color)
         self.lbl4.grid(row=4, column=0, sticky='w', pady=5)
         self.lbl5 = tk.Label(self.f, text='Dotyczy', font=fontVal, bg=color)
@@ -145,7 +147,7 @@ class FormWindow():
             self.selectedFiles.remove(val)
         self.lbFile.delete(lid)
 
-
+    @LogWrapper.dec
     def sygnUpdate(self, event):
         val = self.cbb2[0].get()
         dict = self.cbb2[2]
@@ -154,6 +156,7 @@ class FormWindow():
         else:
             self.signNum.set("Brak sygnaturku")
 
+    @LogWrapper.dec
     def saveFile(self, event):
         curs = self.lbFile.curselection()
         if curs:
@@ -162,6 +165,7 @@ class FormWindow():
             if f:
                 f.write(self.fileDict[name])
 
+    @LogWrapper.dec
     def getValFromTable(self, table, i):
         c = self.dbController.c
         querry = '''SELECT NAME FROM ''' + table + ''' WHERE ID = ''' + str(i) + ''';'''
@@ -174,6 +178,7 @@ class FormWindow():
             except:
                 return row
 
+    @LogWrapper.dec
     def getData(self):
         c = self.dbController.c
         c.execute('''SELECT * FROM SENDERS;''')
@@ -228,20 +233,26 @@ class FormWindow():
             if(self.dane):
                 insert_querry = '''UPDATE ''' + table + ''' SET SENDER_ID = ?, CASE_ID = ?, USER_ID = ?, SIGN_ID = ?, DESCR = ?, STATUS_VAL = ?, DATE = ? WHERE ID = ?;'''
                 self._logger.debug("SQL: {} {}".format(insert_querry, values))
+                c.execute(insert_querry, values)
+                self.dbController.con.commit()
+                return values[-1]
             else:
                 insert_querry = '''INSERT INTO ''' + table + '''(SENDER_ID, CASE_ID, USER_ID, SIGN_ID, DESCR, STATUS_VAL, DATE) VALUES (?,?,?,?,?,?,?)'''
                 self._logger.debug("SQL: {} {}".format(insert_querry, values))
+                c.execute(insert_querry, values)
+                self.dbController.con.commit()
+                return c.lastrowid
         elif table == 'CASES':
             insert_querry = '''INSERT INTO ''' + table + '''  (NAME, TXT_ID) VALUES (?,?)'''
             self._logger.debug('SQL: {} {}'.format(insert_querry, values))
+            c.execute(insert_querry, values)
+            self.dbController.con.commit()
+            return c.lastrowid
         else:
             insert_querry = '''INSERT INTO ''' + table + '''  (NAME) VALUES (?)'''
             self._logger.debug('SQL: {} {}'.format(insert_querry, values))
-        c.execute(insert_querry, values)
-        self.dbController.con.commit()
-        if(table == 'DOCUMENTS'):
-            return values[-1]
-        else:
+            c.execute(insert_querry, values)
+            self.dbController.con.commit()
             return c.lastrowid
 
     def checkData(self):
