@@ -9,8 +9,6 @@ fontVal = 'Helvetica 18 bold'
 height = 3
 width = 35
 
-'''TO DO: 
-DODAĆ CONFIG FILE ABY MÓC ZAPISAĆ USTAWIENIA (DB PATH)'''
 
 
 
