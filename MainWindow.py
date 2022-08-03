@@ -16,9 +16,9 @@ class MainWindow():
     def __init__(self, win, dbController, logger):
         self._logger = logger
         self._logger.debug("Main window creation started")
-
         self.dbController = dbController
         self.parent = win
+        self.parent.iconbitmap('icon.ico')
         self.parent.title('Pismonator C-137')
         self.parent.resizable(False, False)
         self.parent.config(bg='#ffd3d3')

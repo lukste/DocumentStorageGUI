@@ -30,6 +30,7 @@ class FormWindow():
         self.dbController = dbController
         self.win = window
         self.win.config(bg='#ffd3d3')
+        self.win.iconbitmap('icon.ico')
         self._logger = logger
         self._logger.debug("Building form window with data: {}".format(dane))
         ListaDepartamentow, ListaUserow, ListaSpraw, ListaSygnatur = self.getData()

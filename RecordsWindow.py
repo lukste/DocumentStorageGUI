@@ -16,6 +16,7 @@ class RecordsWindow:
         self._logger = logger
         self._logger.debug("Building Records Window")
         self.parent = win
+        self.parent.iconbitmap('icon.ico')
         self.parent.config(bg='#ffd3d3')
         self.parent.title('Pismonator C-137')
         self.f = tk.LabelFrame(self.parent, text="Wprowadzone dokumenty", width=250, height=30, bg='grey', bd=1, cursor='arrow',
@@ -27,10 +28,11 @@ class RecordsWindow:
                        highlightcolor='#ffd3d3', highlightthickness=5, relief=tk.RIDGE)
         self.f2.grid(row=0, column=0, padx=5, pady=5, rowspan=1, columnspan=1, sticky='news')
         self.f2.grid_propagate(True)
-        tk.Button(self.f2, text=" Odśwież ", command=self.refresh).grid(row=0, column=1, sticky='enws')
+        tk.Button(self.f2, text=" Odśwież ", width=20, command=self.refresh).pack(side = 'right', fill='both')
         self.ent = tk.Entry(self.f2, width=120)
         self.ent.bind('<Return>', self.refresh)
-        self.ent.grid(row=0, column=0, sticky='news')
+        #self.ent.grid(row=0, column=0, sticky='news')
+        self.ent.pack(side = 'left', fill='both')
         self.dbController.c.execute('''SELECT DOCUMENTS.ID, SENDERS.NAME, CASES.NAME, SIGNATURES.NAME, USERS.NAME, DOCUMENTS.DESCR, DOCUMENTS.STATUS_VAL, DOCUMENTS.DATE  FROM Documents, Cases, Users, Senders, SIGNATURES 
         WHERE DOCUMENTS.SENDER_ID = SENDERS.ID and DOCUMENTS.CASE_ID = CASES.ID and DOCUMENTS.USER_ID = USERS.ID and DOCUMENTS.SIGN_ID = SIGNATURES.ID''')
         self.rows = self.dbController.c.fetchall()
