@@ -11,7 +11,7 @@ import LogWrapper
 fontVal = 'Helvetica 13 bold'
 color = '#fff0f5'
 
-#TODO data w formacie nie dla hamburgierów CHYBA DONE
+
 
 class FormWindow():
     def __init__(self, window, dbController, logger,  dane=(), pliki=()):

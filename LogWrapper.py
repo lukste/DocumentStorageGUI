@@ -5,7 +5,6 @@ import datetime
 import os
 
 
-##TODO dodać loginy w logach. CHYBA DONE
 
 
 
