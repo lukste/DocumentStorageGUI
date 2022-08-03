@@ -25,12 +25,12 @@ class TableWindow:
                        highlightcolor='#ffd3d3', highlightthickness=5, relief=tk.RIDGE)
         self.f2.grid(row=0, column=0, padx=5, pady=5, rowspan=1, columnspan=1, sticky='news')
         self.f2.grid_propagate(True)
-        self.tableList = Combobox(self.f2, width=20, values=['SENDERS', 'CASES', 'USERS', 'SIGNATURES', 'FILES'])
-        self.tableList.set("USERS")
-        self.tableList.grid(row=0, column=0)
+        self.table_list = Combobox(self.f2, width=20, values=['SENDERS', 'CASES', 'USERS', 'SIGNATURES', 'FILES'])
+        self.table_list.set("USERS")
+        self.table_list.grid(row=0, column=0)
         self.lb = tk.Listbox(self.f, height=40, width=110, bg='#fef0e6', highlightcolor='#fff0f5', highlightbackground='#fff0f5', activestyle='dotbox', selectbackground='#ffaeae')
         self.lb.bind('<Button-3>', self.pop_up)
-        self.tableList.bind('<<ComboboxSelected>>', self.filter)
+        self.table_list.bind('<<ComboboxSelected>>', self.filter)
         self.lb.pack(side='left', fill='both')
         self.filter(None)
         self.m = tk.Menu(self.f, tearoff=0)
@@ -40,7 +40,7 @@ class TableWindow:
     def del_pos(self):
         lid = self.lb.curselection()
         val = self.lb.get(lid)
-        querry = 'DELETE FROM ' + self.tableList.get() + ' WHERE ID = ' + str(val[0]) + ';'
+        querry = 'DELETE FROM ' + self.table_list.get() + ' WHERE ID = ' + str(val[0]) + ';'
         self.dbController.c.execute(querry)
         self.dbController.con.commit()
         self.filter()
@@ -57,7 +57,7 @@ class TableWindow:
             self.m.grab_release()
 
     def filter(self, event=None):
-        v = self.tableList.get()
+        v = self.table_list.get()
         if v:
             if(v == 'FILES'):
                 querry = '''SELECT ID, DOC_ID, NAME FROM '''
