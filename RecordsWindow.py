@@ -3,16 +3,14 @@ from tkinter import ttk
 from DataBaseControler import *
 from FormWindow import FormWindow
 import logging
+import LogWrapper
 
 fontVal = 'Helvetica 10 bold'
 columns= (('ID', 30),('Nadawca', 100), ('Sprawa',300), ('Sygnatura',150), ('Kto dostał',80), ('Czego dotyczy', 100), ('Zrobione?',80), ('Data pisma',80))
 
-#TODO dodać okienko Tak / Nie przy usuwaniu. DONE
-#TODO dodać scroll do szybszego przewijania DONE
-#TODO dodać przycisk odśwież, który ponownie zaczyta rekordy z bazy. DONE
-
 
 class RecordsWindow:
+    @LogWrapper.dec_noargs
     def __init__(self, win, dbController, logger):
         self.dbController = dbController
         self._logger = logger
@@ -31,7 +29,7 @@ class RecordsWindow:
         self.f2.grid_propagate(True)
         tk.Button(self.f2, text=" Odśwież ", command=self.refresh).grid(row=0, column=1, sticky='enws')
         self.ent = tk.Entry(self.f2, width=120)
-        self.ent.bind('<Return>', self.filter)
+        self.ent.bind('<Return>', self.refresh)
         self.ent.grid(row=0, column=0, sticky='news')
         self.dbController.c.execute('''SELECT DOCUMENTS.ID, SENDERS.NAME, CASES.NAME, SIGNATURES.NAME, USERS.NAME, DOCUMENTS.DESCR, DOCUMENTS.STATUS_VAL, DOCUMENTS.DATE  FROM Documents, Cases, Users, Senders, SIGNATURES 
         WHERE DOCUMENTS.SENDER_ID = SENDERS.ID and DOCUMENTS.CASE_ID = CASES.ID and DOCUMENTS.USER_ID = USERS.ID and DOCUMENTS.SIGN_ID = SIGNATURES.ID''')
@@ -51,12 +49,14 @@ class RecordsWindow:
         self.m.add_command(label='Usuń', command=self.del_pos)
         self.m.add_command(label='Anuluj')
 
+    @LogWrapper.dec
     def find_in_rows(self, doc_id):
         for el in self.rows:
             did = el[0]
             if (did == doc_id):
                 return self.rows.index(el)
 
+    @LogWrapper.dec
     def del_pos(self):
         if(tk.messagebox.askquestion("Usuwanie danych", "Czy na pewno chcesz usunąć dokument?") == 'yes'):
             id = self.lb.item(self.lb.selection()[0])['values'][0]
@@ -67,6 +67,7 @@ class RecordsWindow:
             self.dbController.con.commit()
             self.filter(None)
 
+    @LogWrapper.dec_noargs
     def pop_up(self, event):
         iid = self.lb.identify_row(event.y)
         if iid:
@@ -89,7 +90,7 @@ class RecordsWindow:
             self.lb.insert('', 'end', value=row)
 
 
-    def refresh(self):
+    def refresh(self, *args):
         self.dbController.c.execute('''SELECT DOCUMENTS.ID, SENDERS.NAME, CASES.NAME, SIGNATURES.NAME, USERS.NAME, DOCUMENTS.DESCR, DOCUMENTS.STATUS_VAL, DOCUMENTS.DATE  FROM Documents, Cases, Users, Senders, SIGNATURES 
                 WHERE DOCUMENTS.SENDER_ID = SENDERS.ID and DOCUMENTS.CASE_ID = CASES.ID and DOCUMENTS.USER_ID = USERS.ID and DOCUMENTS.SIGN_ID = SIGNATURES.ID''')
         self.rows = self.dbController.c.fetchall()
