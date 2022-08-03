@@ -5,6 +5,9 @@ from tkinter import filedialog as fd
 from FormWindow import FormWindow
 import LogWrapper
 
+#TODO dodać możliwość edytowania danych źródłowych. TO DŁUGO :(
+
+
 class TableWindow:
     def __init__(self, win, dbController, logger):
         self._logger = logger

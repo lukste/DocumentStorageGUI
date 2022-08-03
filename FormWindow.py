@@ -11,6 +11,7 @@ import LogWrapper
 fontVal = 'Helvetica 13 bold'
 color = '#fff0f5'
 
+#TODO data w formacie nie dla hamburgierów CHYBA DONE
 
 class FormWindow():
     def __init__(self, window, dbController, logger,  dane=(), pliki=()):
@@ -50,8 +51,8 @@ class FormWindow():
         self.cbb1[0].grid(row=1, column=1, sticky='we')
         self.lbl2 = tk.Label(self.f, text='Data', font=fontVal,  bg=color)
         self.lbl2.grid(row=1, column=2, sticky='w', pady=5)
-        self.cal =  DateEntry(self.f, width=10, font=fontVal, background='#ffd3d3',
-                                            foreground='white', borderwidth=1)
+        self.cal =  DateEntry(self.f, date_pattern='dd.mm.yyyy', width=10, font=fontVal, background='#ffd3d3',
+                                            foreground='white', borderwidth=1, selectmode='day',)
         self.cal.grid(row=1, column=3, sticky='ew')
         self.lbl2 = tk.Label(self.f, text='Sprawa IK', font=fontVal,  bg=color)
         self.lbl2.grid(row=2, column=0, sticky='w')

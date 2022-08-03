@@ -7,6 +7,10 @@ import logging
 fontVal = 'Helvetica 10 bold'
 columns= (('ID', 30),('Nadawca', 100), ('Sprawa',300), ('Sygnatura',150), ('Kto dostał',80), ('Czego dotyczy', 100), ('Zrobione?',80), ('Data pisma',80))
 
+#TODO dodać okienko Tak / Nie przy usuwaniu. DONE
+#TODO dodać scroll do szybszego przewijania DONE
+#TODO dodać przycisk odśwież, który ponownie zaczyta rekordy z bazy. DONE
+
 
 class RecordsWindow:
     def __init__(self, win, dbController, logger):
@@ -25,17 +29,22 @@ class RecordsWindow:
                        highlightcolor='#ffd3d3', highlightthickness=5, relief=tk.RIDGE)
         self.f2.grid(row=0, column=0, padx=5, pady=5, rowspan=1, columnspan=1, sticky='news')
         self.f2.grid_propagate(True)
-        self.ent = tk.Entry(self.f2, width=110)
+        tk.Button(self.f2, text=" Odśwież ", command=self.refresh).grid(row=0, column=1, sticky='enws')
+        self.ent = tk.Entry(self.f2, width=120)
         self.ent.bind('<Return>', self.filter)
-        self.ent.grid(row=0, column=0)
+        self.ent.grid(row=0, column=0, sticky='news')
         self.dbController.c.execute('''SELECT DOCUMENTS.ID, SENDERS.NAME, CASES.NAME, SIGNATURES.NAME, USERS.NAME, DOCUMENTS.DESCR, DOCUMENTS.STATUS_VAL, DOCUMENTS.DATE  FROM Documents, Cases, Users, Senders, SIGNATURES 
         WHERE DOCUMENTS.SENDER_ID = SENDERS.ID and DOCUMENTS.CASE_ID = CASES.ID and DOCUMENTS.USER_ID = USERS.ID and DOCUMENTS.SIGN_ID = SIGNATURES.ID''')
         self.rows = self.dbController.c.fetchall()
         self.lb = ttk.Treeview(self.f, height=40, show='headings', columns=columns, selectmode='browse')
         self.treeSetup()
+        self.treeScroll = ttk.Scrollbar(self.f)
+        self.treeScroll.configure(command=self.lb.yview)
+        self.lb.configure(yscrollcommand=self.treeScroll.set)
         self.lb.bind('<Double-1>', self.editWindow)
         self.lb.bind('<Button-3>', self.pop_up)
         self.lb.pack(side='left', fill='both')
+        self.treeScroll.pack(side='right', fill='both')
         self.filter(None)
         self.m = tk.Menu(self.f, tearoff=0)
         self.m.add_command(label="Edytuj", command=self.editWindow)
@@ -49,13 +58,14 @@ class RecordsWindow:
                 return self.rows.index(el)
 
     def del_pos(self):
-        id = self.lb.item(self.lb.selection()[0])['values'][0]
-        querry = 'DELETE FROM DOCUMENTS WHERE ID = ' + str(id) + ';'
-        self.rows.pop(self.find_in_rows(id))
-        self._logger.debug('SQL: {}'.format(querry))
-        self.dbController.c.execute(querry)
-        self.dbController.con.commit()
-        self.filter(None)
+        if(tk.messagebox.askquestion("Usuwanie danych", "Czy na pewno chcesz usunąć dokument?") == 'yes'):
+            id = self.lb.item(self.lb.selection()[0])['values'][0]
+            querry = 'DELETE FROM DOCUMENTS WHERE ID = ' + str(id) + ';'
+            self.rows.pop(self.find_in_rows(id))
+            self._logger.debug('SQL: {}'.format(querry))
+            self.dbController.c.execute(querry)
+            self.dbController.con.commit()
+            self.filter(None)
 
     def pop_up(self, event):
         iid = self.lb.identify_row(event.y)
@@ -77,6 +87,13 @@ class RecordsWindow:
             i += 1
         for row in self.rows:
             self.lb.insert('', 'end', value=row)
+
+
+    def refresh(self):
+        self.dbController.c.execute('''SELECT DOCUMENTS.ID, SENDERS.NAME, CASES.NAME, SIGNATURES.NAME, USERS.NAME, DOCUMENTS.DESCR, DOCUMENTS.STATUS_VAL, DOCUMENTS.DATE  FROM Documents, Cases, Users, Senders, SIGNATURES 
+                WHERE DOCUMENTS.SENDER_ID = SENDERS.ID and DOCUMENTS.CASE_ID = CASES.ID and DOCUMENTS.USER_ID = USERS.ID and DOCUMENTS.SIGN_ID = SIGNATURES.ID''')
+        self.rows = self.dbController.c.fetchall()
+        self.filter(None)
 
 
     def filter(self, event):
