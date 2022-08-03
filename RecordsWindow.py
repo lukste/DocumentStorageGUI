@@ -16,7 +16,6 @@ class RecordsWindow:
         self._logger = logger
         self._logger.debug("Building Records Window")
         self.parent = win
-        self.parent.iconbitmap('icon.ico')
         self.parent.config(bg='#ffd3d3')
         self.parent.title('Pismonator C-137')
         self.f = tk.LabelFrame(self.parent, text="Wprowadzone dokumenty", width=250, height=30, bg='grey', bd=1, cursor='arrow',

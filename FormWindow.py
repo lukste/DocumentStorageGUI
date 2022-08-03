@@ -1,4 +1,3 @@
-import tkinter as tk
 from tkinter.ttk import Combobox
 from tkcalendar import DateEntry
 from tkinter import messagebox

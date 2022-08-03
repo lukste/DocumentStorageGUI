@@ -1,6 +1,8 @@
+import logging
+from DataBaseControler import DbController
 from MainWindow import *
 import configparser as cf
-import logging
+
 
 
 

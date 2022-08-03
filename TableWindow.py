@@ -1,11 +1,12 @@
 import tkinter as tk
-from DataBaseControler import *
+
 from tkinter.ttk import Combobox
 from tkinter import filedialog as fd
-from FormWindow import FormWindow
-import LogWrapper
+
 
 #TODO dodać możliwość edytowania danych źródłowych. TO DŁUGO :(
+import LogWrapper
+from DataBaseControler import DbController
 
 
 class TableWindow:

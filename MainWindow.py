@@ -1,9 +1,9 @@
-from FormWindow import *
-from DataBaseControler import *
-from FormWindow import FormWindow
-from RecordsWindow import *
 
-from TableWindow import *
+import tkinter as tk
+from FormWindow import FormWindow
+from RecordsWindow import RecordsWindow
+
+from TableWindow import TableWindow
 
 fontVal = 'Helvetica 18 bold'
 height = 3
@@ -18,7 +18,6 @@ class MainWindow():
         self._logger.debug("Main window creation started")
         self.dbController = dbController
         self.parent = win
-        self.parent.iconbitmap('icon.ico')
         self.parent.title('Pismonator C-137')
         self.parent.resizable(False, False)
         self.parent.config(bg='#ffd3d3')

@@ -1,7 +1,5 @@
 import sqlite3
-
 import LogWrapper
-from LogWrapper import *
 from sqlite3 import Error
 
 class DbController:
