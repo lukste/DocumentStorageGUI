@@ -75,15 +75,15 @@ class TableWindow:
             tk.messagebox.showwarning(title="Ostrzeżenie", message="Wybierz tabele")
 
     @LogWrapper.dec
-    def extractSelectedValues(self):
+    def extract_selected_values(self):
         id0  = self.lb.curselection()[0]
         doc_id = str(self.lb.get(id0)[0])
-        dane = self.selectFrom("DOCUMENTS", "ID", doc_id)
-        pliki = self.selectFrom("FILES", "DOC_ID", doc_id)
+        dane = self.select_from("DOCUMENTS", "ID", doc_id)
+        pliki = self.select_from("FILES", "DOC_ID", doc_id)
         return dane[0], pliki
 
     @LogWrapper.dec_noargs
-    def selectFrom(self, table, column, id):
+    def select_from(self, table, column, id):
         c = self.dbController.c
         querry = '''SELECT * FROM '''+table+''' WHERE '''+column+''' = '''+id+''';'''
         self._logger.debug("SQL: {}".format(querry))

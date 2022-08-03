@@ -37,17 +37,17 @@ class RecordsWindow:
         WHERE DOCUMENTS.SENDER_ID = SENDERS.ID and DOCUMENTS.CASE_ID = CASES.ID and DOCUMENTS.USER_ID = USERS.ID and DOCUMENTS.SIGN_ID = SIGNATURES.ID''')
         self.rows = self.dbController.c.fetchall()
         self.lb = ttk.Treeview(self.f, height=40, show='headings', columns=columns, selectmode='browse')
-        self.treeSetup()
+        self.tree_setup()
         self.treeScroll = ttk.Scrollbar(self.f)
         self.treeScroll.configure(command=self.lb.yview)
         self.lb.configure(yscrollcommand=self.treeScroll.set)
-        self.lb.bind('<Double-1>', self.editWindow)
+        self.lb.bind('<Double-1>', self.edit_window)
         self.lb.bind('<Button-3>', self.pop_up)
         self.lb.pack(side='left', fill='both')
         self.treeScroll.pack(side='right', fill='both')
         self.filter(None)
         self.m = tk.Menu(self.f, tearoff=0)
-        self.m.add_command(label="Edytuj", command=self.editWindow)
+        self.m.add_command(label="Edytuj", command=self.edit_window)
         self.m.add_command(label='Usuń', command=self.del_pos)
         self.m.add_command(label='Anuluj')
 
@@ -82,7 +82,7 @@ class RecordsWindow:
             pass
 
 
-    def treeSetup(self):
+    def tree_setup(self):
         i = 0
         for col, width in columns:
             self.lb.heading(i, text=col)
@@ -111,13 +111,13 @@ class RecordsWindow:
                     break
 
 
-    def extractSelectedValues(self):
+    def extract_selected_values(self):
         doc_id = str(self.lb.item(self.lb.focus())['values'][0])
-        dane = self.selectFrom("DOCUMENTS", "ID", doc_id)
-        pliki = self.selectFrom("FILES", "DOC_ID", doc_id)
+        dane = self.select_from("DOCUMENTS", "ID", doc_id)
+        pliki = self.select_from("FILES", "DOC_ID", doc_id)
         return dane[0], pliki
 
-    def selectFrom(self, table, column, id):
+    def select_from(self, table, column, id):
         c = self.dbController.c
         querry = '''SELECT * FROM '''+table+''' WHERE '''+column+''' = '''+id+''';'''
         self._logger.debug('SQL: {}'.format(querry))
@@ -126,8 +126,8 @@ class RecordsWindow:
         return rows
 
 
-    def editWindow(self, event):
-        d, f = self.extractSelectedValues()
+    def edit_window(self, event):
+        d, f = self.extract_selected_values()
         win = tk.Toplevel()
         FormWindow(win, self.dbController, self._logger, dane=d, pliki=f)
 
